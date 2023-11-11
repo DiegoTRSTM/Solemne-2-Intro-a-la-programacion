@@ -1,0 +1,163 @@
+# Ingreso de datos generales
+print('Ingrese los siguientes datos: ')
+# Curso
+curso = input('Nombre del curso: ')
+# Cantidad de alumnos
+while True:
+    n_alumnos = int(input('Cantidad de alumnos: '))
+    if n_alumnos <= 0:
+        print('El número de alumnos es incorrecto')
+    else:
+        break
+# Nombre de cada alumnos
+alumnos = []
+for i in range(n_alumnos):
+    nombre_alumno = input(f'Nombre del alumno {i + 1}: ')
+    alumnos.append(nombre_alumno)
+# Cantidad de evaluaciones
+evaluaciones = []
+while True:
+    n_evaluaciones = int(input('Número de evaluaciones: '))
+    if n_evaluaciones <= 0:
+        print('El número ingresado no es válido')
+    else:
+        break
+# Ponderación de cada evaluación
+ponderaciones = []
+while True:
+    ponderacion_total = 0
+    for i in range(n_evaluaciones):
+        ponderacion_evaluacion = int(input(f'Ponderación de la evaluación {i+1} en porcentaje(%): '))
+        ponderaciones.append(ponderacion_evaluacion)
+        ponderacion_total += ponderacion_evaluacion
+    if ponderacion_total != 100:
+        print('La ponderación total no es válida: ')
+    else:
+        break
+# Examen
+while True:
+    examen = input('¿Tiene examen? (Si/No): ').lower()
+    if examen == 'si':
+        break
+    elif examen == 'no':
+        break
+    else:
+        print('La respuesta no es válida')
+# Ponderación del examen
+while True:
+    if examen == 'si':
+        ponderacion_examen = int(input('Ingrese ponderación del examen en porcentaje (%): '))
+        break
+    else:
+        ponderacion_examen = 0
+        break
+# Tipo de asignatura
+while True:
+    asignatura = input('¿Es teórica o práctica? (Teo/Lab): ').lower()
+    if asignatura == 'teo':
+        asistencia_aprob = 60
+        break
+    elif asignatura == 'lab':
+        asistencia_aprob = 80
+        break
+    else:
+        print('La respuesta no es válida')
+
+# Menú Permanente
+notas = [[] for _ in range(n_evaluaciones)]
+
+# Menú Permanente
+while True:
+    print("\nMENU PERMANENTE:")
+    print("1. Ingreso de Evaluación")
+    print("2. Ingreso Asistencia")
+    print("3. Condición Final Alumno")
+    print("4. Promedio General")
+    print("5. Salir")
+
+    opcion_menu = input("Seleccione una opción (1-5): ")
+
+    if opcion_menu == "1":
+        # Ingreso de Evaluación
+        num_evaluacion = int(input(f"Ingrese el número de evaluación (1-{n_evaluaciones}): "))
+        if 1 <= num_evaluacion <= n_evaluaciones:
+            for i in range(n_alumnos):
+                nota_alumno = input(f'Ingrese la nota del alumno {alumnos[i]} en la evaluación {num_evaluacion}: ')
+                while True:
+                    try:
+                        nota = float(nota_alumno)
+                        if 1.0 <= nota <= 7.0:
+                            break
+                        else:
+                            print('La nota ingresada no es válida. Debe estar entre 1.0 y 7.0')
+                            nota_alumno = input(f'Ingrese la nota del alumno {alumnos[i]} en la evaluación {num_evaluacion}: ')
+                    except ValueError:
+                        print('Ingrese un valor numérico válido')
+                        nota_alumno = input(f'Ingrese la nota del alumno {alumnos[i]} en la evaluación {num_evaluacion}: ')
+
+                notas[num_evaluacion - 1].append(nota)
+            print('Notas ingresadas exitosamente.')
+        else:
+            print("Número de evaluación no válido.")
+
+    elif opcion_menu == "2":
+        # Ingreso de asistencia
+        for i in range(n_alumnos):
+            while True:
+                asistencia_alumno = int(input(f'Ingrese la asistencia del alumno {alumnos[i]}: '))
+                if 0 <= asistencia_alumno <= 100:
+                    break
+                else:
+                    print('El porcentaje de asistencia es inválido')
+        print('Asistencia ingresada exitosamente.')
+
+
+    elif opcion_menu == "3":
+        # Condición Final Alumno
+        for i in range(n_alumnos):
+            # Calcular nota final del alumno
+            nota_final = 0
+            for j in range(n_evaluaciones):
+                nota_final += notas[j][i] * (ponderaciones[j] / 100)
+            # Multiplicar la nota final por la ponderación del examen
+            nota_final *= (1 + ponderacion_examen / 100)
+            # Verificar condición de asistencia
+            if asignatura == 'teo' and asistencia_aprob <= asistencia_alumno:
+                condicion_asistencia = True
+            elif asignatura == 'lab' and asistencia_aprob <= asistencia_alumno:
+                condicion_asistencia = True
+            else:
+                condicion_asistencia = False
+            # Determinar condición final del alumno
+            if 4.0 <= nota_final <= 7.0 and condicion_asistencia:
+                condicion = "Aprobado"
+            elif 1.0 <= nota_final < 4.0 or not condicion_asistencia:
+                condicion = "Reprobado"
+            else:
+                condicion = "Error"
+            # Mostrar resultado
+            print(f'Condición final del alumno {alumnos[i]}: {condicion}')
+
+    elif opcion_menu == "4":
+        # Promedio General
+        if all(len(notas[j]) == n_alumnos for j in range(n_evaluaciones)):
+            # Verificar que se hayan ingresado todas las notas para todos los alumnos
+            promedios = []
+            for i in range(n_alumnos):
+                nota_final = 0
+                for j in range(n_evaluaciones):
+                    nota_final += notas[j][i] * (ponderaciones[j] / 100)
+                promedios.append(nota_final)
+
+            promedio_general = sum(promedios) / n_alumnos
+            print(f'Promedio general del curso: {promedio_general:.2f}')
+        else:
+            print('No se han ingresado todas las notas para todos los alumnos.')
+
+    elif opcion_menu == "5":
+        # Salir
+        print("Saliendo del programa.")
+        break
+
+    else:
+        print("Opción no válida. Por favor, seleccione una opción del 1 al 5.")
